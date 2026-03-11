@@ -2,7 +2,7 @@
      style="background: linear-gradient(rgba(0,0,0,0.95), rgba(0,0,0,0.95));">
   <div class="container-fluid">
     
-    <a class="navbar-brand" href="{{ route('home') }}">
+    <a class="navbar-brand" href="{{ auth()->check() ? route('dashboard.selector') : route('login') }}">
       <picture>
         <source srcset="{{ asset('images/logo_white.webp') }}" type="image/webp">
         <img id="header_logo" src="{{ asset('images/logo_white.png') }}" alt="Logo" width="90" height="90" decoding="async" style="width: auto; height: 90px;">
@@ -16,15 +16,7 @@
 
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="{{ route('corsi') }}">Corsi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="{{ route('chi-siamo') }}">Chi Siamo?</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="{{ route('contatti') }}">Contatti</a>
-        </li>
+        {{-- Backend: solo area riservata; Corsi/Chi siamo/Contatti sono sul front-end --}}
       </ul>
 
       {{-- Logica Dinamica per Utenti Loggati o Ospiti --}}

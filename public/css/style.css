@@ -1,0 +1,447 @@
+/* RESET BASE */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    background-color: rgb(87, 86, 86);
+    overflow-x: hidden;
+}
+
+/* --- HERO SECTION --- */
+    .hero-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: grey;
+    margin: 0;
+    padding: 0;
+}
+
+    .hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* --- SEZIONE VALORI --- */
+#valori {
+    background-color: #333;
+}
+
+.custom-list li {
+    font-size: 1.15rem;
+    border-left: 4px solid #ffcc00 !important;
+}
+
+/* --- SEZIONE STAFF --- */
+#staff {
+    background-color: #575656;
+}
+
+.staff-card {
+    background: #333 !important; /* Forza il colore scuro */
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.staff-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.4) !important;
+}
+
+.staff-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #ffcc00;
+    display: block;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    #valori h1, #staff h1 {
+        font-size: 2rem;
+    }
+    .custom-list li {
+        font-size: 1rem;
+    }
+}
+
+/* --- SEZIONE CORSI (CARDS) --- */
+#section-cards {
+    background-color: #1a1a1a; /* Leggermente più scuro dello sfondo card */
+}
+
+.card-corso {
+    background-color: #2c2c2c;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-corso:hover {
+    transform: translateY(-8px);
+    background-color: #3a3a3a;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+    border-color: #ffcc00;
+}
+
+.card-corso h4 {
+    color: #ffcc00;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.card-corso .orari {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.card-corso .descrizione {
+    color: #bbbbbb;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1; /* Spinge il costo in fondo se le descrizioni hanno lunghezze diverse */
+}
+
+.card-corso .costo {
+    font-weight: 800;
+    color: #ffcc00;
+    font-size: 1.25rem;
+    margin-bottom: 0;
+    text-align: right;
+}
+
+/* --- RESPONSIVE ADJUSTMENTS --- */
+@media (max-width: 768px) {
+    .card-corso {
+        padding: 20px;
+        max-width: 90%; /* Per non farle troppo larghe su schermi stretti */
+        margin: 0 auto;
+    }
+}
+
+/* --- STILE FORM CONTATTI --- */
+.login-form {
+    background: rgba(30, 30, 30, 0.95);
+    padding: 40px;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.login-form h2 {
+    color: #ffcc00;
+    margin-bottom: 25px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+}
+
+.login-form label {
+    color: #fff;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+/* Stile Input personalizzato sopra Bootstrap */
+.custom-input {
+    background: #444 !important;
+    border: 1px solid #555 !important;
+    color: #fff !important;
+    padding: 12px !important;
+}
+
+.custom-input::placeholder {
+    color: #888;
+}
+
+.custom-input:focus {
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.25) !important;
+    border-color: #ffcc00 !important;
+    outline: none;
+}
+
+/* --- STILE MAPPA --- */
+.contatti-mappa-container {
+    border: 3px solid #ffcc00;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.contatti-mappa {
+    filter: grayscale(0.3) contrast(1.1); /* Effetto opzionale per la mappa */
+    transition: filter 0.3s;
+}
+
+.contatti-mappa:hover {
+    filter: grayscale(0);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 991px) {
+    .login-form {
+        padding: 30px 20px;
+    }
+    
+    .contatti-mappa {
+        min-height: 350px !important;
+    }
+}
+
+/* --- SEZIONE LOGIN --- */
+.login-section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.login-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.login-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2;
+}
+
+/* --- FORM LOGIN --- */
+.login-form {
+    background: rgba(30, 30, 30, 0.92);
+    padding: 40px 30px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    backdrop-filter: blur(5px); /* Effetto vetro opaco */
+}
+
+.login-form h2 {
+    color: #ffcc00;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.login-form label {
+    color: #fff;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.custom-input {
+    background: #444 !important;
+    border: 1px solid #555 !important;
+    color: #fff !important;
+    padding: 12px !important;
+    border-radius: 8px;
+}
+
+.custom-input:focus {
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.3) !important;
+    border-color: #ffcc00 !important;
+    outline: none;
+}
+
+.btn-login {
+    background: #ffcc00;
+    color: #222;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    background: #e6b800;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 204, 0, 0.2);
+}
+
+/* RESPONSIVE */
+@media (max-width: 576px) {
+    .login-form {
+        padding: 25px 20px;
+        margin: 0 15px;
+    }
+}
+
+/* Colore dei placeholder per gli input personalizzati */
+.custom-input::placeholder {
+    color: #ccc !important; /* Grigio chiaro */
+    opacity: 0.8;
+}
+
+/* Opzionale: Rendi il testo digitato un po' più evidente */
+.form-control.custom-input {
+    color: #fff !important;
+}
+
+/* Stile per il focus (quando clicchi dentro) */
+.form-control.custom-input:focus {
+    background-color: #333 !important;
+    border-color: #ffcc00 !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 204, 0, 0.25);
+    color: #fff;
+}
+
+/* --- OTTIMIZZAZIONE SPECIFICA PER SELECT --- */
+
+/* Assicura che la freccia del select sia visibile su sfondo scuro */
+select.custom-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffcc00' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+    appearance: none; /* Rimuove lo stile di sistema */
+}
+
+/* Stile per le opzioni all'interno del menu (il dropdown vero e proprio) */
+select.custom-input option {
+    background-color: #333; /* Colore scuro coerente con il tuo form */
+    color: #fff;
+}
+
+/* Quando il select è vuoto (placeholder simulato), rendi il testo grigio */
+select.custom-input:invalid {
+    color: #888 !important;
+}
+
+/* Una volta selezionata una voce, il testo torna bianco */
+select.custom-input:valid {
+    color: #fff !important;
+}
+
+/* Impedisce al dropdown di rompere il layout su schermi piccoli */
+@media (max-width: 991px) {
+    .navbar-nav .dropdown-menu {
+        position: static !important;
+        float: none;
+        width: 100%;
+        margin-top: 10px;
+        background-color: rgba(255, 255, 255, 0.05); /* Un leggero stacco visivo */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .dropdown-menu-end {
+        right: auto !important;
+        left: 0 !important;
+    }
+}
+
+/* Link anagrafica in tabelle admin: aspetto invariato, hover giallo */
+.link-anagrafica:hover {
+    color: #ffc107 !important;
+    cursor: pointer;
+}
+
+/* Breadcrumb admin: un solo " / ", stile coerente con tema scuro */
+.breadcrumb-admin {
+    background: transparent !important;
+    padding: 0;
+    font-size: 0.875rem;
+}
+.breadcrumb-admin .breadcrumb-item::before {
+    display: none;
+    content: none;
+}
+
+/* --- CUSTOM FILE INPUT (scegli file) --- */
+.custom-file-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.custom-file-wrapper input[type="file"] {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.custom-file-wrapper .custom-file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #ffcc00;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.custom-file-wrapper .custom-file-label:hover {
+    background: #3a3a3a;
+    border-color: #ffcc00;
+    box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.2);
+}
+
+.custom-file-wrapper .custom-file-label:active {
+    transform: scale(0.98);
+}
+
+.custom-file-wrapper .custom-file-name {
+    font-size: 0.85rem;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

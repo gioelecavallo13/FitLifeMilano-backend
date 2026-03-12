@@ -19,14 +19,7 @@
         {{-- Backend: solo area riservata; Corsi/Chi siamo/Contatti sono sul front-end --}}
       </ul>
 
-      {{-- Logica Dinamica per Utenti Loggati o Ospiti --}}
-      @guest
-        {{-- Se l'utente NON è loggato --}}
-        <a href="{{ route('login') }}" class="btn btn-outline-light ms-lg-3">
-          Area Riservata
-        </a>
-      @endguest
-
+      {{-- Logica Dinamica per Utenti Loggati --}}
       @auth
         {{-- Contenitore con posizionamento relativo per ancorare il menu --}}
         <div class="nav-item dropdown ms-lg-3 position-relative">

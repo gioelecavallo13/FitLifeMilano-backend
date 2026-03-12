@@ -24,19 +24,7 @@
                 <h4 class="h6 fw-bold text-warning text-uppercase mb-3" style="letter-spacing: 0.05em;">Link utili</h4>
                 <ul class="list-unstyled">
                     <li class="mb-2">
-                        <a href="{{ url('/') }}" class="text-decoration-none text-white-50 hover-warning transition-all">Home</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ url('/corsi') }}" class="text-decoration-none text-white-50 hover-warning transition-all">Corsi</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ url('/chi-siamo') }}" class="text-decoration-none text-white-50 hover-warning transition-all">Chi Siamo?</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ url('/contatti') }}" class="text-decoration-none text-white-50 hover-warning transition-all">Contatti</a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="{{ url('/area-riservata') }}" class="text-decoration-none text-white-50 hover-warning transition-all">Area Riservata</a>
+                        <a href="{{ config('app.frontend_url') }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-white-50 hover-warning transition-all">Visita il nostro sito</a>
                     </li>
                 </ul>
             </div>

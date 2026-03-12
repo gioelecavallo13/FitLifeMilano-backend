@@ -20,7 +20,9 @@
         @isset($courses)
             @forelse($courses as $course)
                 <div class="col-md-6 col-lg-4">
-                    <div class="card bg-dark border-secondary h-100 text-white shadow-lg">
+                    <div class="card bg-dark border-secondary h-100 text-white shadow-lg course-card"
+                         data-href="{{ route('client.courses.show', $course->id) }}?from=booking"
+                         tabindex="0">
                         {{-- Badge con il Giorno --}}
                         <div class="card-header border-secondary bg-black d-flex justify-content-between align-items-center">
                             <span class="badge bg-warning text-dark fw-bold text-uppercase">
@@ -106,3 +108,57 @@
     @endisset
 </div>
 @endsection
+
+@push('styles')
+<style>
+.course-card {
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.8);
+    background-color: #181818;
+}
+
+.course-card:focus-visible {
+    outline: 2px solid #f5c542;
+    outline-offset: 2px;
+}
+</style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cards = document.querySelectorAll('.course-card[data-href]');
+
+    cards.forEach(function (card) {
+        const navigate = function () {
+            const href = card.getAttribute('data-href');
+            if (href) {
+                window.location.href = href;
+            }
+        };
+
+        card.addEventListener('click', function (e) {
+            if (e.target.closest('button, a, form')) {
+                return;
+            }
+            navigate();
+        });
+
+        card.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (e.target.closest('button, a, form')) {
+                    return;
+                }
+                e.preventDefault();
+                navigate();
+            }
+        });
+    });
+});
+</script>
+@endpush

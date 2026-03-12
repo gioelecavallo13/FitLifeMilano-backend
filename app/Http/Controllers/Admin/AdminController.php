@@ -314,4 +314,36 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'Utente rimosso!');
     }
+
+    public function usersBulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:users,id',
+        ]);
+
+        $ids = collect($validated['ids'])
+            ->unique()
+            ->reject(fn ($id) => Auth::id() !== null && (int) $id === (int) Auth::id())
+            ->values()
+            ->all();
+
+        if (empty($ids)) {
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'Nessun utente valido selezionato per l\'eliminazione.');
+        }
+
+        $users = User::whereIn('id', $ids)->get();
+        $deletedCount = 0;
+
+        foreach ($users as $user) {
+            $user->delete();
+            $deletedCount++;
+        }
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', "Eliminati {$deletedCount} utenti selezionati.");
+    }
 }

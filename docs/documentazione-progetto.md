@@ -286,9 +286,11 @@ L’admin dispone di un modulo completo per gestire gli utenti del sistema.
 
 - **Gestione utenti esistenti**
   - Una vista indice (`admin/users/index.blade.php`) elenca gli utenti, con possibilità di filtri/ricerche.
+  - Tramite checkbox a sinistra di ogni riga l’admin può **selezionare più utenti** e usare l’azione _Elimina selezionati_ per effettuare una cancellazione di massa:
+    - La route `admin.users.bulkDestroy` riceve l’elenco degli ID e applica la stessa logica di cancellazione della singola anagrafica, evitando di rimuovere accidentalmente l’utente loggato.
   - Sono disponibili viste di dettaglio (`show`), modifica (`edit`) e conferma eliminazione.
   - `AdminController` gestisce il ciclo completo:
-    - `usersIndex`, `userShow`, `userEdit`, `userUpdate`, `userDestroy`.
+    - `usersIndex`, `userShow`, `userEdit`, `userUpdate`, `userDestroy`, `usersBulkDestroy`.
 
 Questo modulo fornisce all’admin un controllo centrale su chi può accedere al sistema e con quale ruolo.
 
@@ -327,14 +329,16 @@ Questa parte è gestita da `CoachController`, che espone azioni come `coursesInd
   - Qui vede l’elenco dei corsi disponibili con:
     - Informazioni su coach, orario e capienza.
     - Stato della propria iscrizione (già iscritto / posti disponibili / corso pieno).
-
+  - Le card dei corsi sono cliccabili: un click (fuori dai pulsanti di azione) porta all’**anagrafica del corso** per una consultazione più dettagliata.
+  
 - Dal dettaglio corso (`client/courses/show.blade.php`, azione `courseShow`) il client può:
-  - **Iscriversi** a un corso tramite `ClientController@enroll`:
+  - **Iscriversi** a un corso se non è ancora prenotato e ci sono posti disponibili, tramite un pulsante di prenotazione che richiama `ClientController@enroll`:
     - Il metodo controlla che:
       - Il client non sia già iscritto a quel corso.
       - Non sia stata raggiunta la **capacità massima** impostata sul corso.
     - Se i controlli vanno a buon fine, viene creata la riga nella pivot `course_user`.
-  - **Annullare la prenotazione** tramite `ClientController@cancelBooking`, che rimuove la riga corrispondente nella pivot.
+  - Visualizzare un chiaro stato **Sold Out** se il corso è pieno e non è possibile prenotare.
+  - **Annullare la prenotazione** tramite `ClientController@cancelBooking`, che rimuove la riga corrispondente nella pivot e, se già iscritto, inviare un **messaggio al coach** dalla stessa schermata.
 
 Questo modulo mette insieme:
 

@@ -29,8 +29,12 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login-process', [AuthController::class, 'login'])->name('login.process');
 });
 
-// Redirect root verso login (opzionale)
+// Redirect root in base allo stato di autenticazione
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard.selector');
+    }
+
     return redirect()->route('login');
 });
 
@@ -87,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/utenti/{id}/modifica', [AdminController::class, 'userEdit'])->name('users.edit');
         Route::put('/utenti/{id}/aggiorna', [AdminController::class, 'userUpdate'])->name('users.update');
         Route::delete('/utenti/{id}/elimina', [AdminController::class, 'userDestroy'])->name('users.destroy');
+        Route::delete('/utenti/elimina-multipli', [AdminController::class, 'usersBulkDestroy'])->name('users.bulkDestroy');
     });
 
     // --- GRUPPO COACH ---

@@ -67,6 +67,23 @@
                                 </button>
                             </form>
                         </div>
+                    @else
+                        @php
+                            $availableSlots = $course->capacity - $course->users_count;
+                        @endphp
+                        <hr class="border-secondary my-4">
+                        @if($availableSlots > 0)
+                            <form method="POST" action="{{ route('client.enroll', $course->id) }}" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-warning w-100 fw-bold text-uppercase">
+                                    Prenota ora
+                                </button>
+                            </form>
+                        @else
+                            <button class="btn btn-secondary w-100 fw-bold text-uppercase disabled">
+                                Sold Out
+                            </button>
+                        @endif
                     @endif
                 </div>
             </div>

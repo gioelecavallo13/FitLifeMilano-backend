@@ -6,7 +6,7 @@
     <h1 class="text-white mb-5 fw-bold">DASHBOARD AMMINISTRATORE</h1>
     <div class="row g-4 text-center justify-content-center">
         
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card bg-dark border-warning text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-envelope-paper display-4 text-warning mb-3"></i>
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card bg-dark border-info text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-chat-dots display-4 text-info mb-3"></i>
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card bg-dark border-success text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-people display-4 text-success mb-3"></i>
@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card bg-dark border-secondary text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-person-plus display-4 mb-3"></i>
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card bg-dark border-info text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-person-badge display-4 text-info mb-3"></i>
@@ -71,7 +71,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card bg-dark border-primary text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-calendar-plus display-4 text-primary mb-3"></i>

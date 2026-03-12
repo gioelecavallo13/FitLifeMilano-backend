@@ -1,6 +1,6 @@
 ## 1. Introduzione al progetto
 
-FitLifeMilano è un gestionale per centro fitness/palestra sviluppato in **Laravel** che copre sia la parte di **sito vetrina** (pagine pubbliche e form contatti) sia la parte di **applicazione gestionale** per tre tipi di utenti:
+FitLifeMilano è un gestionale per centro fitness/palestra. Questo repository è il **backend** Laravel: espone **area riservata** (login, dashboard admin/coach/client, corsi, messaggi, chat, utenti, profilo) e **API** (es. health). La parte di **sito vetrina** (home, corsi, chi siamo, contatti, form contatti) è gestita dal progetto **FitLifeMilano-frontend**. Il backend offre:
 
 - **Admin**: gestisce l’intero sistema (utenti, corsi, prenotazioni, messaggi, richieste di contatto).
 - **Coach**: gestisce e tiene traccia dei propri corsi e delle comunicazioni con i clienti.
@@ -8,7 +8,7 @@ FitLifeMilano è un gestionale per centro fitness/palestra sviluppato in **Larav
 
 L’applicazione offre:
 
-- **Area pubblica** con pagine informative (`index`, `corsi`, `chi-siamo`, `contatti`) e form di contatto.
+- **Unica pagina pubblica del backend:** login (`/area-riservata`); il sito pubblico è sul frontend.
 - **Autenticazione** con login, logout e reindirizzamento automatico alla dashboard corretta in base al ruolo.
 - **Gestione utenti** (creazione e amministrazione di admin/coach/client lato admin).
 - **Gestione corsi** (creazione, modifica, cancellazione, capienza massima).
@@ -769,7 +769,7 @@ Il flusso di messaggistica si compone di due parti: gestione delle conversazioni
 
 ## 7. Configurazione, ambiente ed integrazioni esterne
 
-Sebbene il file `.env.example` non sia presente, le configurazioni in `config/*.php` permettono di dedurre le principali variabili d’ambiente necessarie al corretto funzionamento del sistema.
+Il file `.env.example` è presente nel repository; le configurazioni in `config/*.php` definiscono le principali variabili d’ambiente necessarie al corretto funzionamento del sistema.
 
 ### 7.1 Configurazione applicativa di base
 

@@ -77,28 +77,20 @@ Le viste pubbliche (index, corsi, chi-siamo, contatti) e `ContactRequestControll
 - **Coach** (prefix `coach`, middleware `role:coach`): dashboard, corsi (index, show), clienti (show), messaggi (index, show, send, markRead, startWithClient, startWithCoachColleague).
 - **Client** (prefix `client`, middleware `role:client`): dashboard, prenota-corsi (booking), corsi (show, enroll, cancel), messaggi (index, show, send, markRead, startWithCoach).
 
-### Redirect root (opzionale)
+### Redirect root
 
-Per evitare 404 sulla root del backend, si può definire `GET /` che reindirizza a `/area-riservata` (o all’URL del frontend).
+Implementato: `GET /` reindirizza a `route('login')` (`/area-riservata`).
 
 ---
 
 ## Rotte API backend
 
-**File:** [routes/api.php](routes/api.php) — **da creare** (attualmente assente nella root del progetto).
+**File:** [routes/api.php](routes/api.php) — **presente** e registrato in `bootstrap/app.php`.
 
-### Registrazione
+### Contenuto attuale
 
-In [bootstrap/app.php](bootstrap/app.php) aggiungere nella `withRouting` la chiave:
-
-```php
-api: __DIR__.'/../routes/api.php',
-```
-
-### Contenuto iniziale
-
-- **GET /api/health** — risposta JSON (es. `status`, `app`) per health check e test.
-- In seguito: API pubbliche (es. elenco corsi per il sito pubblico) senza auth; API riservate con `auth:sanctum` (o sessione) se necessario.
+- **GET /api/health** — risposta JSON (`status`, `app`) per health check e test.
+- In seguito: altre API pubbliche (es. elenco corsi per il sito pubblico) senza auth; API riservate con `auth:sanctum` (o sessione) se necessario.
 
 Le rotte in `routes/api.php` sono sotto il prefisso `api` e lo stack API (JSON, throttling, ecc.).
 
@@ -187,10 +179,10 @@ Nel frontend deployato su Render impostare la variabile **AREA_RISERVATA_URL**:
 
 ## Checklist pre-deploy backend
 
-- [ ] **routes/web.php:** rimosse rotte pubbliche (/, corsi, chi-siamo, contatti, contact.store); mantenute solo guest (login) + auth.
-- [ ] **routes/api.php:** creato e registrato in `bootstrap/app.php`.
-- [ ] **CORS:** configurato per frontend (fitlifemilano-frontend.onrender.com, fitlifemilano.it).
-- [ ] **.env.example:** aggiornato con APP_URL e note per produzione.
+- [x] **routes/web.php:** rimosse rotte pubbliche (/, corsi, chi-siamo, contatti, contact.store); mantenute solo guest (login) + auth; GET `/` redirect a login.
+- [x] **routes/api.php:** creato e registrato in `bootstrap/app.php` (GET `/api/health`).
+- [x] **CORS:** configurato in `config/cors.php` per frontend (fitlifemilano-frontend.onrender.com, fitlifemilano.it).
+- [x] **.env.example:** presente con APP_URL e note per produzione.
 - [ ] **Codice:** pushato su GitHub (FitLifeMilano-backend).
 - [ ] **Render:** servizio creato, build/start e variabili configurate.
 - [ ] **Test:** GET `https://fitlifemilano-backend.onrender.com/area-riservata` mostra login; rotte protette richiedono login.

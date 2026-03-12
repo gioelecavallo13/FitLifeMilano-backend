@@ -1,8 +1,8 @@
-# FitLife Milano — Relazione tecnica del sito
+# FitLife Milano — Backend
 
 ## 1. Introduzione
 
-**FitLife Milano** è un'applicazione web Laravel per la gestione di un centro fitness: sito pubblico (corsi, chi siamo, contatti), area riservata con login e tre ruoli (Admin, Coach, Cliente), gestione corsi, messaggi da contatti e prenotazioni corsi da parte dei clienti.
+**FitLife Milano (backend)** è l’applicazione Laravel che espone **area riservata** (login, dashboard admin/coach/client) e **API** consumate dal frontend. Il **sito pubblico** (home, corsi, chi siamo, contatti) è gestito dal progetto **FitLifeMilano-frontend**; questo backend espone solo la pagina di **login** come parte pubblica, tutto il resto è protetto da autenticazione e ruoli (Admin, Coach, Cliente). Funzionalità: gestione corsi, utenti, messaggi da contatti, chat in tempo reale (Pusher), prenotazioni corsi, profilo utente e foto profilo.
 
 **Versione attuale:** 1.5.0
 
@@ -17,6 +17,8 @@
 - `php artisan serve` e aprire l’URL indicato nel terminale.
 
 ### Produzione e performance
+
+**Deploy:** il backend è deployabile su Render (es. **https://fitlifemilano-backend.onrender.com**). Il sito pubblico è su frontend (es. FitLifeMilano-frontend); il link "Area Riservata" dal sito punta a questo backend.
 
 **Variabili `.env` obbligatorie:**
 - `APP_DEBUG=false`
@@ -51,7 +53,7 @@ Oppure usare lo script: `php deploy-cache.php` (o `./deploy-cache.sh` su Linux/m
 
 ### Repository e sviluppo
 
-- **Repository:** [https://github.com/gioelecavallo13/FitLifeMilanoLaravel.git](https://github.com/gioelecavallo13/FitLifeMilanoLaravel.git)
+- **Repository:** [https://github.com/gioelecavallo13/FitLifeMilano-backend.git](https://github.com/gioelecavallo13/FitLifeMilano-backend.git)
 - **Branch principale:** `master`
 - **Workflow:** lavorare su `master` (o su un branch), poi `git add`, `git commit`, `git push origin master` per pubblicare. Se il remoto è aggiornato da altri: `git pull origin master` (o `git pull --rebase origin master`) prima del push.
 
@@ -60,9 +62,12 @@ Oppure usare lo script: `php deploy-cache.php` (o `./deploy-cache.sh` su Linux/m
 ## 2. Stack e dipendenze
 
 - **Backend:** Laravel 12, PHP 8.2+
-- **Frontend:** Bootstrap 5.3, Blade, CSS in `public/css/style.css`, JS in `public/js/`
-- **Asset:** `asset()` su file in `public/` (no Vite nel layout principale)
-- **Immagini:** WebP con fallback JPG/PNG, organizzate per sezione in `public/images/`
+- **Viste area riservata:** Bootstrap 5.3, Blade, CSS in `public/css/style.css`, JS in `public/js/`
+- **Chat realtime:** Pusher, Laravel Broadcasting, Laravel Echo (canali privati)
+- **Profilo:** Intervention Image per elaborazione foto profilo (salvate come BLOB nel DB)
+- **API:** rotte in `routes/api.php` (es. GET `/api/health`), CORS configurato per il frontend
+- **Debug (opzionale):** Laravel Telescope
+- **Asset:** `asset()` su file in `public/`; immagini in `public/images/`
 
 ---
 
@@ -76,16 +81,19 @@ Oppure usare lo script: `php deploy-cache.php` (o `./deploy-cache.sh` su Linux/m
 
 ## 4. Rotte (sintesi)
 
+In questo backend **non** sono presenti le pagine pubbliche del sito (home, corsi, chi siamo, contatti): sono sul frontend. Qui restano solo login (pubblico) e area riservata.
+
 | Tipo        | Esempi |
 |------------|--------|
-| Pubbliche  | `/`, `/corsi`, `/chi-siamo`, `/contatti`, `/area-riservata`; POST `/contatti/store` |
-| Guest      | GET login, POST login |
-| Auth       | POST `/logout`, GET `/dashboard-selector` |
-| Admin      | `/admin/dashboard`, `/admin/courses/create`, GET `/admin/courses/{id}` (scheda corso), `/admin/courses/{id}/edit`, `/admin/messaggi`, `/admin/messaggi/{id}`, `/admin/inserisci-coach`, `/admin/inserisci-clienti`, `/admin/utenti`, GET `/admin/utenti/{id}` (scheda utente), `/admin/utenti/{id}/modifica` |
-| Coach      | `/coach/dashboard` |
-| Client     | `/client/dashboard`, `/client/prenota-corsi`, GET `/client/corsi/{id}` (scheda corso, posti e annulla prenotazione), POST `/client/corsi/{id}/prenota`, DELETE `/client/corsi/{id}/annulla` |
+| Pubbliche  | GET `/` → redirect a `/area-riservata`; GET `/area-riservata` (login), POST `/login-process` |
+| Guest      | GET login, POST login (come sopra) |
+| Auth       | POST `/logout`, GET `/dashboard-selector`, `/profilo`, `/profilo/foto`, `/utenti/{user}/foto` |
+| Admin      | `/admin/dashboard`, `/admin/courses/*` (CRUD, unenroll), `/admin/messaggi`, `/admin/messaggi/{id}`, `/admin/chat` (conversazioni, invio, segna-letti, con-utente), `/admin/inserisci-coach`, `/admin/inserisci-clienti`, `/admin/utenti` (index, show, edit, update, destroy) |
+| Coach      | `/coach/dashboard`, `/coach/corsi`, `/coach/clienti/{id}`, `/coach/messaggi` (conversazioni) |
+| Client     | `/client/dashboard`, `/client/prenota-corsi`, GET `/client/corsi/{id}`, POST `/client/corsi/{courseId}/prenota`, DELETE `/client/corsi/{courseId}/annulla`, `/client/messaggi` |
+| API        | GET `/api/health` (JSON, senza auth) — CORS consentito per frontend |
 
-Le view restituite sono sempre Blade; i nomi view seguono le convenzioni sotto.
+Le view restituite sono Blade; i nomi view seguono le convenzioni sotto.
 
 ---
 
@@ -102,12 +110,11 @@ resources/views/
 │   ├── header.blade.php   # Navbar (inclusa nel layout)
 │   └── footer.blade.php   # Footer (incluso nel layout)
 ├── components/
-│   └── hero.blade.php     # Componente Hero riutilizzabile
-├── index.blade.php        # Home
-├── corsi.blade.php
-├── chi-siamo.blade.php
-├── contatti.blade.php
-├── area-riservata.blade.php
+│   ├── hero.blade.php     # Componente Hero riutilizzabile
+│   └── breadcrumb.blade.php
+├── partials/
+│   └── chat-scripts.blade.php   # Echo/Pusher per chat realtime
+├── area-riservata.blade.php     # Unica “pubblica” servita dal backend (login)
 ├── admin/
 │   ├── dashboard.blade.php
 │   ├── courses/
@@ -117,6 +124,8 @@ resources/views/
 │   ├── messages/
 │   │   ├── index.blade.php
 │   │   └── show-message.blade.php
+│   ├── chat/
+│   │   └── index.blade.php   # Lista conversazioni e chat admin
 │   ├── coaches/
 │   │   └── create.blade.php
 │   ├── clients/
@@ -126,19 +135,36 @@ resources/views/
 │       ├── show.blade.php    # Anagrafica utente (corsi prenotati / corsi insegnati)
 │       └── edit.blade.php
 ├── coach/
-│   └── dashboard.blade.php
+│   ├── dashboard.blade.php
+│   ├── courses/
+│   │   ├── index.blade.php
+│   │   └── show.blade.php
+│   ├── clients/
+│   │   └── show.blade.php
+│   └── messages/
+│       └── index.blade.php
 ├── client/
 │   ├── dashboard.blade.php
 │   ├── booking.blade.php
-│   └── courses/
-│       └── show.blade.php    # Dettaglio corso per cliente: posti, annulla prenotazione
-└── emails/
-    └── contact-response.blade.php
+│   ├── courses/
+│   │   └── show.blade.php   # Dettaglio corso: posti, annulla prenotazione
+│   └── messages/
+│       └── index.blade.php
+├── messages/
+│   └── chat.blade.php       # Vista chat condivisa (admin/coach/client)
+├── profile/
+│   └── show.blade.php
+├── emails/
+│   └── contact-response.blade.php
+├── index.blade.php          # Non servita da questo backend (sito sul frontend)
+├── corsi.blade.php
+├── chi-siamo.blade.php
+└── contatti.blade.php
 ```
 
-- **Pagine pubbliche:** file Blade nella **root** di `views/` (es. `index`, `corsi`, `chi-siamo`, `contatti`, `area-riservata`).
-- **Pagine per ruolo:** sottocartelle `admin/`, `coach/`, `client/` con file che riflettono la sezione (es. `admin/courses/create`, `admin/messages/index`).
-- **Layout condiviso:** tutte le pagine web (tranne le email) estendono `layouts.layout` e usano header/footer inclusi da lì.
+- **Backend:** l’unica pagina “pubblica” servita è `area-riservata` (login). I file `index`, `corsi`, `chi-siamo`, `contatti` esistono ma **non sono raggiungibili** da questo progetto (sito pubblico sul frontend).
+- **Pagine per ruolo:** sottocartelle `admin/`, `coach/`, `client/` (incluse `admin/chat`, `coach/messages`, `client/messages`).
+- **Layout condiviso:** le pagine dell’area riservata estendono `layouts.layout` e usano header/footer inclusi da lì.
 
 ### 5.2 Layout principale (`layouts/layout.blade.php`)
 
@@ -195,8 +221,8 @@ Per una **nuova sezione admin:** creare la sottocartella in `views/admin/` (es. 
 
 ### 5.7 View Coach e Client
 
-- **Coach:** solo `coach/dashboard.blade.php` — contenuto minimo (titolo e testo); stesso layout e stessi stack del resto del sito.
-- **Client:** `client/dashboard.blade.php` = card "Prenota corso" + tabella "Le mie prenotazioni" (dati da `$myCourses`), con link "Anagrafica corso" verso la scheda del singolo corso; `client/booking.blade.php` = griglia di card corsi (da `$courses`) con pulsante "Prenota" o "Sold Out" e form POST a `client.enroll` o stato disabilitato; quando già iscritto, link "Anagrafica corso" verso la scheda corso; `client/courses/show.blade.php` = vista corso singolo per il cliente: "Posti (disponibili / totali)", se iscritto pulsante "Annulla prenotazione" e link "Anagrafica corso" dalla dashboard e dalla pagina prenotazioni.
+- **Coach:** `coach/dashboard.blade.php`, `coach/courses/*`, `coach/clients/show`, `coach/messages/index` (lista conversazioni e chat); stesso layout e stessi stack del resto del sito.
+- **Client:** `client/dashboard.blade.php` = card "Prenota corso" + tabella "Le mie prenotazioni" (dati da `$myCourses`), con link "Anagrafica corso" verso la scheda del singolo corso; `client/booking.blade.php` = griglia di card corsi (da `$courses`) con pulsante "Prenota" o "Sold Out" e form POST a `client.enroll` o stato disabilitato; quando già iscritto, link "Anagrafica corso" verso la scheda corso; `client/courses/show.blade.php` = vista corso singolo per il cliente: "Posti (disponibili / totali)", se iscritto pulsante "Annulla prenotazione" e link "Anagrafica corso" dalla dashboard e dalla pagina prenotazioni; `client/messages/index.blade.php` = lista conversazioni e chat.
 
 Variabili attese: da controller passare `$courses` per la booking e `$myCourses` per la dashboard cliente.
 
@@ -251,6 +277,7 @@ Le versioni seguono il [Semantic Versioning](https://semver.org/). Di seguito l�
 
 | Versione | Descrizione |
 |----------|-------------|
+| 1.5.1 | Aggiornamenti documentazione, .env.example e piano backend |
 | 1.5.0 | Prestazioni desktop (CLS, preload LCP, cache asset, dimensioni immagini); fix proporzioni logo navbar |
 | 1.4.0 | Fix deploy Render: opzioni SSL DB condizionali (DB_SSL_CA) e mariadb-dev nel Dockerfile |
 | 1.3.0 | Anagrafica corsi e utenti, vista corso cliente, posti e annulla prenotazione; README con avvio rapido e repository |

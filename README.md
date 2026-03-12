@@ -277,7 +277,7 @@ Le versioni seguono il [Semantic Versioning](https://semver.org/). Di seguito lâ
 
 | Versione | Descrizione |
 |----------|-------------|
-| 1.6.0 | Cancellazione multipla utenti in admin, layout dashboard a 3 card per riga, miglioramenti UX tabella utenti e prenotazione corsi lato client (card cliccabili, pulsante di prenotazione in anagrafica) |
+| 1.6.1 | Cancellazione multipla utenti in admin, layout dashboard a 3 card per riga, miglioramenti UX tabella utenti e prenotazione corsi lato client (card cliccabili, pulsante di prenotazione in anagrafica) |
 | 1.5.1 | Aggiornamenti documentazione, .env.example e piano backend |
 | 1.5.0 | Prestazioni desktop (CLS, preload LCP, cache asset, dimensioni immagini); fix proporzioni logo navbar |
 | 1.4.0 | Fix deploy Render: opzioni SSL DB condizionali (DB_SSL_CA) e mariadb-dev nel Dockerfile |

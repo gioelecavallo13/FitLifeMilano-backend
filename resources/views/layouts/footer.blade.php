@@ -49,6 +49,9 @@
             <div class="col-12 text-center border-top border-secondary pt-3" style="--bs-border-opacity: .2;">
                 <p class="text-secondary small mb-0" style="font-size: 0.85rem; letter-spacing: 0.03em;">
                     &copy; {{ date('Y') }} FitLife. Tutti i diritti riservati.
+                    @if(config('app.version'))
+                        | v{{ config('app.version') }}
+                    @endif
                 </p>
             </div>
         </div>

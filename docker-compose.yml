@@ -1,0 +1,11 @@
+name: fitlifemilano-backend
+
+services:
+  app:
+    build: .
+    ports:
+      - "10000:10000"
+    volumes:
+      - .:/var/www/html:cached
+    env_file:
+      - .env

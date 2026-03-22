@@ -2,6 +2,8 @@
 
 ## Overview
 
+**Versione documento (riferimento codice):** 1.7.0 — includere in ogni rilascio significativo la verifica di `routes/web.php` e `CHANGELOG.md`.
+
 Il backend FitLifeMilano espone **area riservata** (login, dashboard admin/coach/client) e **API** consumate dal frontend. L’**unica pagina pubblica** è il **login**; tutto il resto è protetto da autenticazione. Deploy su **Render** con dominio **https://fitlifemilano-backend.onrender.com**. Repository: **https://github.com/gioelecavallo13/FitLifeMilano-backend.git**.
 
 ---
@@ -73,9 +75,9 @@ Le viste pubbliche (index, corsi, chi-siamo, contatti) e `ContactRequestControll
 ### Protette (middleware `auth`)
 
 - **Comuni:** `POST /logout` (`logout`), `GET /dashboard-selector` (`dashboard.selector`), `GET /profilo` (`profile.show`), `POST /profilo/foto` (`profile.updatePhoto`), `GET /utenti/{user}/foto` (`profile.photo`).
-- **Admin** (prefix `admin`, middleware `role:admin`): dashboard, corsi (CRUD, unenroll), messaggi (index, show, reply), chat (index, show, send, markRead, startWithUser), inserisci-coach/store-coach, inserisci-clienti/store-clienti, utenti (index, show, edit, update, destroy).
-- **Coach** (prefix `coach`, middleware `role:coach`): dashboard, corsi (index, show), clienti (show), messaggi (index, show, send, markRead, startWithClient, startWithCoachColleague).
-- **Client** (prefix `client`, middleware `role:client`): dashboard, prenota-corsi (booking), corsi (show, enroll, cancel), messaggi (index, show, send, markRead, startWithCoach).
+- **Admin** (prefix `admin`, middleware `role:admin`): dashboard, **calendario-corsi** (`admin.calendar`), corsi (CRUD, unenroll, **GET/PUT occurrence** `courses.occurrence.edit` / `courses.occurrence.update`), messaggi (index, show, reply), chat (index, show, send, markRead, startWithUser), inserisci-coach/store-coach, inserisci-clienti/store-clienti, utenti (index, show, edit, update, destroy, bulkDestroy).
+- **Coach** (prefix `coach`, middleware `role:coach`): dashboard, corsi (index, show), **calendario-corsi** (`coach.calendar`), clienti (show), messaggi (index, show, send, markRead, startWithClient, startWithCoachColleague).
+- **Client** (prefix `client`, middleware `role:client`): dashboard, prenota-corsi (booking), corsi (show, enroll, cancel), **calendario-corsi** (`client.calendar`), messaggi (index, show, send, markRead, startWithCoach).
 
 ### Redirect root
 

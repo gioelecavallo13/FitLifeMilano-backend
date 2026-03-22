@@ -1,5 +1,7 @@
 # Mappatura rotte monolite FitLifeMilano
 
+> **Aggiornamento v1.7.0:** aggiunte rotte calendario (admin, coach, client) e modifica occorrenza singola corso in admin (`/admin/courses/{id}/occurrence/{data}/edit`). Root `/` nel backend reindirizza a login o dashboard.
+
 Classificazione delle rotte in **pubbliche** vs **area riservata** (admin / coach / client) per la separazione front-end / back-end.
 
 ## Rotte pubbliche (sito front-end)
@@ -31,15 +33,15 @@ Classificazione delle rotte in **pubbliche** vs **area riservata** (admin / coac
 
 ### Admin (middleware role:admin, prefix admin)
 
-- dashboard, corsi (CRUD, unenroll), messaggi, chat, inserisci-coach, inserisci-clienti, utenti (index, show, edit, update, destroy)
+- dashboard, **calendario-corsi**, corsi (CRUD, unenroll, **occurrence edit/update** per data `YYYY-MM-DD`), messaggi, chat, inserisci-coach, inserisci-clienti, utenti (index, show, edit, update, destroy, bulk destroy)
 
 ### Coach (middleware role:coach, prefix coach)
 
-- dashboard, corsi, clienti, messaggi (conversazioni)
+- dashboard, corsi, **calendario-corsi**, clienti, messaggi (conversazioni)
 
 ### Client (middleware role:client, prefix client)
 
-- dashboard, prenota-corsi, corsi (show, enroll, cancel), messaggi (conversazioni)
+- dashboard, prenota-corsi, corsi (show, enroll, cancel con `occurrence_date`), **calendario-corsi**, messaggi (conversazioni)
 
 ## Assegnazione dopo la separazione
 

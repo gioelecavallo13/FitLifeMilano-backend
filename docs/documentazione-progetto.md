@@ -1,5 +1,7 @@
 ## 1. Introduzione al progetto
 
+> **Versione documentazione (allineata al backend):** 1.7.0 — Corsi con occorrenze ripetute, override per singola data, iscrizioni per `occurrence_date`. Vedi `README.md` e `CHANGELOG.md` nella root del repository.
+
 FitLifeMilano è un gestionale per centro fitness/palestra. Questo repository è il **backend** Laravel: espone **area riservata** (login, dashboard admin/coach/client, corsi, messaggi, chat, utenti, profilo) e **API** (es. health). La parte di **sito vetrina** (home, corsi, chi siamo, contatti, form contatti) è gestita dal progetto **FitLifeMilano-frontend**. Il backend offre:
 
 - **Admin**: gestisce l’intero sistema (utenti, corsi, prenotazioni, messaggi, richieste di contatto).
@@ -11,8 +13,8 @@ L’applicazione offre:
 - **Unica pagina pubblica del backend:** login (`/area-riservata`); il sito pubblico è sul frontend.
 - **Autenticazione** con login, logout e reindirizzamento automatico alla dashboard corretta in base al ruolo.
 - **Gestione utenti** (creazione e amministrazione di admin/coach/client lato admin).
-- **Gestione corsi** (creazione, modifica, cancellazione, capienza massima).
-- **Prenotazione corsi** da parte dei client, con controllo di capacità e doppie prenotazioni.
+- **Gestione corsi** (creazione, modifica, cancellazione, capienza massima, corsi **ripetibili** con fine ciclo e date di cutoff, **override per singola occorrenza** per orari e scadenze).
+- **Prenotazione corsi** da parte dei client per **data di lezione** (`occurrence_date`), con controllo capacità e deadline per quella data; meta JSON su “Prenota corsi” per orari effettivi e scadenze.
 - **Messaggistica realtime (chat)** tra admin, coach e client, basata su Laravel Broadcasting, Pusher e Laravel Echo.
 - **Gestione profilo utente**, inclusa la **foto profilo** elaborata e salvata come BLOB nel database.
 
@@ -44,9 +46,10 @@ Contiene i controller che gestiscono la logica applicativa lato server.
 - **Sottocartella `Admin`**
   - `AdminController`: controller principale dell’area admin. Gestisce:
     - Dashboard admin (statistiche, conteggi, messaggi non letti).
-    - Gestione utenti (coach/client/utenti generici).
-    - Gestione corsi (CRUD, iscrizioni/annullamenti iscrizione).
+    - Gestione utenti (coach/client/utenti generici, eliminazione multipla).
+    - Gestione corsi (CRUD, iscrizioni/annullamenti per occorrenza, **modifica override per data** `course_occurrence_settings`, calendario corsi).
     - Gestione delle richieste di contatto (lista, dettaglio, risposta via email).
+  - `CalendarController`: calendario corsi per coach e client (viste dedicate).
   - `AdminConversationController`: gestisce la chat lato admin (lista conversazioni, apertura chat, invio messaggi, marcatura come letti).
 
 - **Sottocartella `Coach`**
@@ -70,8 +73,16 @@ Contiene i modelli Eloquent che rappresentano le entità principali del dominio:
   - Relazioni con corsi, conversazioni e messaggi.
   - Metodi di utilità (es. calcolo del numero di messaggi non letti, accessor per nome completo e URL foto profilo).
 
-- `Course`: rappresenta un corso in palestra (giorno, orario, coach, capacità massima).
-  - Relazioni con il coach creatore e con i client iscritti tramite pivot `course_user`.
+- `Course`: rappresenta un corso in palestra (giorno della settimana, **prima occorrenza**, ripetibilità, orari di default, deadline prenotazione/annullamento nel giorno della lezione, capacità, eventuali date di fine ciclo e cutoff disdette client).
+  - Relazione con il coach creatore; iscrizioni tramite **`CourseEnrollment`** (una riga per utente + `occurrence_date`).
+  - Relazione **`occurrenceSettings`** → `CourseOccurrenceSetting` (override opzionali per singola data: `start_time`, `end_time`, `booking_deadline_time`, `cancellation_deadline_time`).
+  - Metodi di dominio: calcolo prossima occorrenza, date nel range, `getEffectiveStartTimeForDate` / `getEffectiveEndTimeForDate`, deadline per data, posti disponibili per occorrenza.
+
+- `CourseEnrollment`: iscrizione di un utente a un corso per una **data di lezione** specifica.
+
+- `CourseOccurrenceSetting`: riga opzionale per `(course_id, occurrence_date)` che sovrascrive i default del corso per quella data.
+
+- `CourseOccurrenceSnapshot`: snapshot storici per conteggi/posti su occorrenze passate (comando/manutenzione).
 
 - `Conversation`: rappresenta una conversazione di chat tra due ruoli (admin/coach/client).
   - Contiene i riferimenti agli utenti coinvolti e la relazione con i messaggi.
@@ -133,7 +144,7 @@ Le viste Blade sono organizzate per area funzionale:
 ### 2.6 Database (`database/migrations`, `database/seeders`, `database/factories`)
 
 - La struttura delle tabelle è definita in **migration** come:
-  - Tabelle applicative: `users`, `courses`, pivot `course_user`, `conversations`, `messages`, `contact_requests`.
+  - Tabelle applicative: `users`, `courses`, **`course_enrollments`** (iscrizioni con `occurrence_date`), **`course_occurrence_settings`** (override per data), **`course_occurrence_snapshots`**, `conversations`, `messages`, `contact_requests` (eventuale pivot legacy `course_user` rimossa dopo migrazione dati — verificare migrazioni nel repo).
   - Tabelle di infrastruttura: `jobs` (queue), `cache`, tabelle di **Laravel Telescope**.
 
 - I **seeder** principali (`UserSeeder`, `CourseSeeder`) permettono di popolare un ambiente di sviluppo con utenti di esempio e corsi iniziali.

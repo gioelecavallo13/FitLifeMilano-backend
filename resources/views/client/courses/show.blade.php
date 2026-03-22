@@ -1,6 +1,9 @@
 @extends('layouts.layout')
 @section('title', 'Dettaglio corso: ' . $course->name . " | " . config("app.name"))
 @section('content')
+@php
+    $occStr = $occurrenceDate->format('Y-m-d');
+@endphp
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -36,11 +39,11 @@
                             <span class="fw-bold text-primary">{{ number_format($course->price, 2) }} €</span>
                         </div>
                         <div class="col-md-4 mb-2 mb-md-0">
-                            <label class="text-secondary small text-uppercase fw-bold d-block">Giorno</label>
-                            @php
-                                $giorni = ['Monday' => 'Lunedì', 'Tuesday' => 'Martedì', 'Wednesday' => 'Mercoledì', 'Thursday' => 'Giovedì', 'Friday' => 'Venerdì', 'Saturday' => 'Sabato', 'Sunday' => 'Domenica'];
-                            @endphp
-                            <span>{{ $giorni[$course->day_of_week] ?? $course->day_of_week }}</span>
+                            <label class="text-secondary small text-uppercase fw-bold d-block">Giorno lezione</label>
+                            <span>{{ $occurrenceDate->locale('it')->isoFormat('dddd D MMMM YYYY') }}</span>
+                            @if($course->first_occurrence_date)
+                                <span class="badge {{ $course->is_repeatable ? 'bg-info' : 'bg-secondary' }} ms-1">{{ $course->is_repeatable ? 'Ripetibile' : 'Singolo' }}</span>
+                            @endif
                         </div>
                         <div class="col-md-4">
                             <label class="text-secondary small text-uppercase fw-bold d-block">Orario</label>
@@ -49,8 +52,13 @@
                     </div>
 
                     <div>
-                        <label class="text-secondary small text-uppercase fw-bold d-block">Posti</label>
-                        <span>{{ $course->capacity - $course->users_count }} su {{ $course->capacity }}</span>
+                        <label class="text-secondary small text-uppercase fw-bold d-block">Posti (questa data)</label>
+                        <span>{{ $spotsLeft }} su {{ $course->capacity }}</span>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="text-secondary small text-uppercase fw-bold d-block">Prenotazioni chiudono alle</label>
+                        <span>{{ $course->getBookingDeadlineAtForOccurrenceDate($occurrenceDate)?->format('H:i') ?? '—' }}</span>
                     </div>
 
                     @if($isEnrolled)
@@ -59,26 +67,43 @@
                             <a href="{{ route('client.messages.startWithCoach', $course->user_id) }}" class="btn btn-info fw-bold text-uppercase">
                                 <i class="bi bi-chat-dots me-1"></i> Messaggio al coach
                             </a>
-                            <form action="{{ route('client.cancel', $course->id) }}" method="POST" onsubmit="return confirm('Vuoi davvero annullare la prenotazione?')" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger fw-bold text-uppercase">
-                                    <i class="bi bi-x-circle me-1"></i> Annulla prenotazione
+                            @if($course->isCancellationOpenForOccurrenceDate($occurrenceDate))
+                                <form action="{{ route('client.cancel', $course->id) }}" method="POST" onsubmit="return confirm('Vuoi davvero annullare la prenotazione per questa data?')" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="occurrence_date" value="{{ $occStr }}">
+                                    <button type="submit" class="btn btn-outline-danger fw-bold text-uppercase">
+                                        <i class="bi bi-x-circle me-1"></i> Annulla prenotazione
+                                    </button>
+                                </form>
+                            @else
+                                @php
+                                    $cancelDeadlineAt = $course->getCancellationDeadlineAtForOccurrenceDate($occurrenceDate);
+                                @endphp
+                                <button type="button" class="btn btn-secondary fw-bold text-uppercase disabled" title="Annulla disponibile fino alle {{ $cancelDeadlineAt?->format('H:i') ?? '—' }}">
+                                    <i class="bi bi-x-circle me-1"></i> Annulla non disponibile
                                 </button>
-                            </form>
+                            @endif
                         </div>
                     @else
-                        @php
-                            $availableSlots = $course->capacity - $course->users_count;
-                        @endphp
                         <hr class="border-secondary my-4">
-                        @if($availableSlots > 0)
-                            <form method="POST" action="{{ route('client.enroll', $course->id) }}" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-warning w-100 fw-bold text-uppercase">
-                                    Prenota ora
+                        @if($spotsLeft > 0)
+                            @if($course->isEnrollmentOpenForOccurrenceDate($occurrenceDate))
+                                <form method="POST" action="{{ route('client.enroll', $course->id) }}" class="d-inline">
+                                    @csrf
+                                    @if($course->first_occurrence_date && ! $course->is_repeatable)
+                                    @else
+                                        <input type="hidden" name="occurrence_date" value="{{ $occStr }}">
+                                    @endif
+                                    <button type="submit" class="btn btn-warning w-100 fw-bold text-uppercase">
+                                        Prenota ora
+                                    </button>
+                                </form>
+                            @else
+                                <button type="button" class="btn btn-secondary w-100 fw-bold text-uppercase disabled" title="Le prenotazioni sono chiuse: il corso sta per iniziare">
+                                    Prenotazioni chiuse
                                 </button>
-                            </form>
+                            @endif
                         @else
                             <button class="btn btn-secondary w-100 fw-bold text-uppercase disabled">
                                 Sold Out

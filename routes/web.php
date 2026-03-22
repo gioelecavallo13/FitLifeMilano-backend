@@ -1,14 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Coach\CoachController;
-use App\Http\Controllers\Client\ClientController;
-use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\Admin\AdminConversationController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\Client\ClientController;
+use App\Http\Controllers\Coach\CoachController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilePhotoController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
         } elseif ($user->role === 'coach') {
             return redirect()->route('coach.dashboard');
         }
+
         return redirect()->route('client.dashboard');
     })->name('dashboard.selector');
 
@@ -61,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     // --- GRUPPO AMMINISTRATORI ---
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/calendario-corsi', [AdminController::class, 'calendar'])->name('calendar');
 
         Route::get('/courses/create', [AdminController::class, 'courseCreate'])->name('courses.create');
         Route::get('/courses/{id}', [AdminController::class, 'courseShow'])->name('courses.show');
@@ -69,6 +72,12 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/courses/{id}', [AdminController::class, 'courseUpdate'])->name('courses.update');
         Route::post('/courses/destroy', [AdminController::class, 'courseDestroy'])->name('courses.destroy');
         Route::post('/courses/{courseId}/unenroll/{userId}', [AdminController::class, 'courseUnenroll'])->name('courses.unenroll');
+        Route::get('/courses/{course}/occurrence/{occurrenceDate}/edit', [AdminController::class, 'courseOccurrenceEdit'])
+            ->where('occurrenceDate', '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+            ->name('courses.occurrence.edit');
+        Route::put('/courses/{course}/occurrence/{occurrenceDate}', [AdminController::class, 'courseOccurrenceUpdate'])
+            ->where('occurrenceDate', '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+            ->name('courses.occurrence.update');
 
         Route::get('/messaggi', [AdminController::class, 'messages'])->name('messages.index');
         Route::get('/messaggi/{id}', [AdminController::class, 'messageShow'])->name('messages.show');
@@ -106,6 +115,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/messaggi/conversazione/{id}/segna-letti', [ConversationController::class, 'markAsRead'])->name('messages.markRead');
         Route::get('/messaggi/conversazione/con-client/{clientId}', [ConversationController::class, 'startWithClient'])->name('messages.startWithClient');
         Route::get('/messaggi/conversazione/con-coach-collega/{coachId}', [ConversationController::class, 'startWithCoachColleague'])->name('messages.startWithCoachColleague');
+        Route::get('/calendario-corsi', [CalendarController::class, 'coach'])->name('calendar');
     });
 
     // --- GRUPPO CLIENTI ---
@@ -120,6 +130,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/messaggi/conversazione/{id}', [ConversationController::class, 'storeMessage'])->name('messages.send');
         Route::post('/messaggi/conversazione/{id}/segna-letti', [ConversationController::class, 'markAsRead'])->name('messages.markRead');
         Route::get('/messaggi/conversazione/con-coach/{coachId}', [ConversationController::class, 'startWithCoach'])->name('messages.startWithCoach');
+        Route::get('/calendario-corsi', [CalendarController::class, 'client'])->name('calendar');
     });
 
 });

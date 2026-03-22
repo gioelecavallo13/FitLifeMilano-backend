@@ -5,6 +5,9 @@
 set -e
 cd "$(dirname "$0")"
 
+echo "Esecuzione: php artisan migrate --force"
+php artisan migrate --force
+
 echo "Esecuzione: php artisan config:cache"
 php artisan config:cache
 

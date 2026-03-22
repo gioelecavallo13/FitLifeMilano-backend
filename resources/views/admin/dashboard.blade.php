@@ -82,6 +82,17 @@
             </div>
         </div>
 
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-dark border-warning text-white h-100 shadow">
+                <div class="card-body py-5">
+                    <i class="bi bi-calendar3 display-4 text-warning mb-3"></i>
+                    <h4>CALENDARIO CORSI</h4>
+                    <p class="text-secondary small">Visualizza tutte le occorrenze mensili.</p>
+                    <a href="{{ route('admin.calendar') }}" class="btn btn-warning w-100 mt-3">APRI</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection

@@ -16,6 +16,16 @@
             </div>
         </div>
         <div class="col-12 col-sm-6 col-lg">
+            <div class="card bg-dark border-secondary text-white h-100 shadow">
+                <div class="card-body py-5">
+                    <i class="bi bi-calendar3 display-4 mb-3"></i>
+                    <h4 class="fw-bold">CALENDARIO</h4>
+                    <p class="text-secondary small">Visualizza il calendario dei tuoi corsi.</p>
+                    <a href="{{ route('coach.calendar') }}" class="btn btn-outline-light w-100 mt-3">APRI</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg">
             <div class="card bg-dark border-warning text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-envelope-paper display-4 text-warning mb-3"></i>

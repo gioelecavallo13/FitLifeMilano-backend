@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Notifications\Notifiable;
 use Intervention\Image\Laravel\Facades\Image;
 
 class User extends Authenticatable
@@ -66,7 +66,7 @@ class User extends Authenticatable
     protected function profilePhotoUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => !empty($this->attributes['profile_photo'] ?? null)
+            get: fn () => ! empty($this->attributes['profile_photo'] ?? null)
                 ? route('profile.photo', $this->id)
                 : '/images/foto-profilo-default-media.jpg',
         );
@@ -79,7 +79,7 @@ class User extends Authenticatable
     protected function profilePhotoUrlSmall(): Attribute
     {
         return Attribute::make(
-            get: fn () => !empty($this->attributes['profile_photo'] ?? null)
+            get: fn () => ! empty($this->attributes['profile_photo'] ?? null)
                 ? route('profile.photo', $this->id)
                 : '/images/foto-profilo-default-piccola.jpg',
         );
@@ -101,12 +101,23 @@ class User extends Authenticatable
     }
 
     /**
+     * RELAZIONE: Iscrizioni del client (una per occorrenza)
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(CourseEnrollment::class);
+    }
+
+    /**
      * RELAZIONE: I corsi a cui un CLIENTE è iscritto
-     * (Molti-a-Molti tramite la tabella pivot course_user)
+     * (Molti-a-Molti tramite course_enrollments con occurrence_date)
      */
     public function courses(): BelongsToMany
     {
-        return $this->belongsToMany(Course::class)->withTimestamps();
+        return $this->belongsToMany(Course::class, 'course_enrollments', 'user_id', 'course_id')
+            ->withPivot('occurrence_date')
+            ->withTimestamps()
+            ->withCasts(['occurrence_date' => 'date']);
     }
 
     /**

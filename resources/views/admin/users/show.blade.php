@@ -75,10 +75,6 @@
                 </div>
             </div>
 
-            @php
-                $giorni = ['Monday' => 'Lunedì', 'Tuesday' => 'Martedì', 'Wednesday' => 'Mercoledì', 'Thursday' => 'Giovedì', 'Friday' => 'Venerdì', 'Saturday' => 'Sabato', 'Sunday' => 'Domenica'];
-            @endphp
-
             @if($user->role === 'coach')
             {{-- Card Corsi di cui è personal trainer --}}
             <div class="card bg-dark border-warning text-white shadow-lg">
@@ -101,7 +97,17 @@
                                 @forelse($user->createdCourses as $course)
                                 <tr class="table-row-chat cursor-pointer" data-href="{{ route('admin.courses.show', $course->id) }}" role="button" tabindex="0">
                                     <td class="ps-4 py-3 fw-bold text-warning">{{ $course->name }}</td>
-                                    <td class="py-3">{{ $giorni[$course->day_of_week] ?? $course->day_of_week }}</td>
+                                    <td class="py-3">
+                                        {{ $course->first_occurrence_date?->format('d/m/Y') ?? $course->day_label }}
+                                        @if($course->first_occurrence_date)
+                                            <span class="badge {{ $course->is_repeatable ? 'bg-info' : 'bg-secondary' }}">
+                                                {{ $course->is_repeatable ? 'Ripetibile' : 'Singolo' }}
+                                            </span>
+                                        @endif
+                                        <div class="small text-secondary mt-1">
+                                            Prenota fino alle {{ $course->getBookingDeadlineAt()?->format('H:i') ?? '—' }}
+                                        </div>
+                                    </td>
                                     <td class="py-3 pe-4">{{ \Carbon\Carbon::parse($course->start_time)->format('H:i') }} – {{ \Carbon\Carbon::parse($course->end_time)->format('H:i') }}</td>
                                 </tr>
                                 @empty
@@ -141,7 +147,17 @@
                                 <tr class="table-row-chat cursor-pointer" data-href="{{ route('admin.courses.show', $course->id) }}" role="button" tabindex="0">
                                     <td class="ps-4 py-3 fw-bold text-warning">{{ $course->name }}</td>
                                     <td class="py-3">{{ $course->coach ? $course->coach->first_name . ' ' . $course->coach->last_name : 'N/D' }}</td>
-                                    <td class="py-3">{{ $giorni[$course->day_of_week] ?? $course->day_of_week }}</td>
+                                    <td class="py-3">
+                                        {{ \Carbon\Carbon::parse($course->pivot->occurrence_date)->format('d/m/Y') }}
+                                        @if($course->first_occurrence_date)
+                                            <span class="badge {{ $course->is_repeatable ? 'bg-info' : 'bg-secondary' }}">
+                                                {{ $course->is_repeatable ? 'Ripetibile' : 'Singolo' }}
+                                            </span>
+                                        @endif
+                                        <div class="small text-secondary mt-1">
+                                            Prenota fino alle {{ $course->getBookingDeadlineAtForOccurrenceDate(\Carbon\Carbon::parse($course->pivot->occurrence_date))?->format('H:i') ?? '—' }}
+                                        </div>
+                                    </td>
                                     <td class="py-3">{{ \Carbon\Carbon::parse($course->start_time)->format('H:i') }} – {{ \Carbon\Carbon::parse($course->end_time)->format('H:i') }}</td>
                                     <td class="py-3 pe-4 text-secondary small">
                                         {{ $course->pivot->created_at ? $course->pivot->created_at->timezone('Europe/Rome')->format('d/m/Y H:i') : '—' }}

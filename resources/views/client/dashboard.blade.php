@@ -20,6 +20,16 @@
             </div>
         </div>
         <div class="col-md-4">
+            <div class="card bg-dark border-secondary text-white h-100 shadow">
+                <div class="card-body py-5">
+                    <i class="bi bi-calendar3 display-4 mb-3"></i>
+                    <h4 class="fw-bold">CALENDARIO CORSI</h4>
+                    <p class="text-secondary small">Visualizza il calendario dei corsi a cui sei iscritto.</p>
+                    <a href="{{ route('client.calendar') }}" class="btn btn-outline-light w-100 mt-3 fw-bold text-uppercase">Apri calendario</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
             <div class="card bg-dark border-info text-white h-100 shadow">
                 <div class="card-body py-5">
                     <i class="bi bi-chat-dots display-4 text-info mb-3"></i>
@@ -56,15 +66,18 @@
                                 {{-- $myCourses viene passato dal metodo index() del ClientController --}}
                                 @isset($myCourses)
                                     @forelse($myCourses as $course)
-                                        <tr class="table-row-chat cursor-pointer" data-href="{{ route('client.courses.show', $course->id) }}?from=dashboard" role="button" tabindex="0">
+                                        <tr class="table-row-chat cursor-pointer" data-href="{{ route('client.courses.show', $course->id) }}?from=dashboard&occurrence_date={{ \Carbon\Carbon::parse($course->pivot->occurrence_date)->format('Y-m-d') }}" role="button" tabindex="0">
                                             <td class="ps-4 py-3">
                                                 <div class="fw-bold text-warning">{{ $course->name }}</div>
                                             </td>
                                             <td class="py-3">{{ $course->coach->first_name ?? 'N/D' }} {{ $course->coach->last_name ?? '' }}</td>
                                             <td class="py-3 pe-4">
                                                 <span class="badge bg-outline-secondary border border-secondary text-white small">
-                                                    {{ $course->day_of_week }} | {{ \Carbon\Carbon::parse($course->start_time)->format('H:i') }}
+                                                    {{ \Carbon\Carbon::parse($course->pivot->occurrence_date)->format('d/m/Y') }} | {{ \Carbon\Carbon::parse($course->start_time)->format('H:i') }}
                                                 </span>
+                                                @if($course->first_occurrence_date)
+                                                    <span class="badge {{ $course->is_repeatable ? 'bg-info' : 'bg-secondary' }} ms-1">{{ $course->is_repeatable ? 'Ripetibile' : 'Singolo' }}</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty

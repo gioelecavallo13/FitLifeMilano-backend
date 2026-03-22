@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Coach;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CoachController extends Controller
@@ -18,6 +17,7 @@ class CoachController extends Controller
         $courses = Auth::user()->createdCourses()->withCount('users')->get();
         $breadcrumb = [['label' => 'Dashboard', 'url' => null]];
         $unreadMessagesCount = Auth::user()->unreadMessagesCount();
+
         return view('coach.dashboard', compact('courses', 'breadcrumb', 'unreadMessagesCount'));
     }
 
@@ -31,6 +31,7 @@ class CoachController extends Controller
             ['label' => 'Dashboard', 'url' => route('coach.dashboard')],
             ['label' => 'I miei corsi', 'url' => null],
         ];
+
         return view('coach.courses.index', compact('courses', 'breadcrumb'));
     }
 
@@ -39,13 +40,19 @@ class CoachController extends Controller
      */
     public function courseShow($id)
     {
-        $course = Course::with(['coach', 'users'])->where('user_id', Auth::id())->findOrFail($id);
+        $course = Course::with(['coach'])->withCount('enrollments')->where('user_id', Auth::id())->findOrFail($id);
+        $enrollmentsByDate = $course->enrollments()
+            ->with('user')
+            ->orderBy('occurrence_date')
+            ->get()
+            ->groupBy(fn ($e) => $e->occurrence_date->format('Y-m-d'));
         $breadcrumb = [
             ['label' => 'Dashboard', 'url' => route('coach.dashboard')],
             ['label' => 'I miei corsi', 'url' => route('coach.courses.index')],
             ['label' => $course->name, 'url' => null],
         ];
-        return view('coach.courses.show', compact('course', 'breadcrumb'));
+
+        return view('coach.courses.show', compact('course', 'enrollmentsByDate', 'breadcrumb'));
     }
 
     /**
@@ -55,7 +62,7 @@ class CoachController extends Controller
     {
         $user = User::where('role', 'client')->findOrFail($id);
         $coachCourseIds = Auth::user()->createdCourses()->pluck('id');
-        if (!$user->courses()->whereIn('courses.id', $coachCourseIds)->exists()) {
+        if (! $user->courses()->whereIn('courses.id', $coachCourseIds)->exists()) {
             abort(403);
         }
 
@@ -67,13 +74,13 @@ class CoachController extends Controller
                 ['label' => 'Dashboard', 'url' => route('coach.dashboard')],
                 ['label' => 'I miei corsi', 'url' => route('coach.courses.index')],
                 ['label' => $course ? $course->name : 'Corso', 'url' => $course ? route('coach.courses.show', $course->id) : null],
-                ['label' => $user->first_name . ' ' . $user->last_name, 'url' => null],
+                ['label' => $user->first_name.' '.$user->last_name, 'url' => null],
             ];
         } else {
             $breadcrumb = [
                 ['label' => 'Dashboard', 'url' => route('coach.dashboard')],
                 ['label' => 'I miei corsi', 'url' => route('coach.courses.index')],
-                ['label' => $user->first_name . ' ' . $user->last_name, 'url' => null],
+                ['label' => $user->first_name.' '.$user->last_name, 'url' => null],
             ];
         }
 
@@ -89,6 +96,7 @@ class CoachController extends Controller
             ['label' => 'Dashboard', 'url' => route('coach.dashboard')],
             ['label' => 'Messaggi', 'url' => null],
         ];
+
         return view('coach.messages.index', compact('breadcrumb'));
     }
 }

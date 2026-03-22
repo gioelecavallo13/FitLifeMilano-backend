@@ -20,12 +20,12 @@ return [
     | Application Version
     |--------------------------------------------------------------------------
     |
-    | Versione applicativa esposta nella UI (footer) e allineata alla
-    | sezione \"Storia delle versioni\" del README.
+    | Impostare solo in .env come APP_VERSION (nessun default qui). Usata nel
+    | footer se valorizzata; allineare a README / CHANGELOG al rilascio.
     |
     */
 
-    'version' => env('APP_VERSION', '1.7.0'),
+    'version' => env('APP_VERSION'),
 
     /*
     |--------------------------------------------------------------------------

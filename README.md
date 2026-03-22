@@ -4,7 +4,7 @@
 
 **FitLife Milano (backend)** è l’applicazione Laravel che espone **area riservata** (login, dashboard admin/coach/client) e **API** consumate dal frontend. Il **sito pubblico** (home, corsi, chi siamo, contatti) è gestito dal progetto **FitLifeMilano-frontend**; questo backend espone solo la pagina di **login** come parte pubblica, tutto il resto è protetto da autenticazione e ruoli (Admin, Coach, Cliente). Funzionalità: gestione corsi, utenti, messaggi da contatti, chat in tempo reale (Pusher), prenotazioni corsi, profilo utente e foto profilo.
 
-**Versione attuale:** 1.7.0 (vedi anche `CHANGELOG.md` e `config('app.version')` / `APP_VERSION` in `.env`)
+**Versione attuale:** 1.7.0 — la versione mostrata in app è **`APP_VERSION` nel file `.env`** (nessun default in `config/app.php`). Vedi anche `CHANGELOG.md`.
 
 **Documentazione aggiuntiva (cartella `docs/`):**
 
@@ -23,7 +23,7 @@
 - `php artisan key:generate`
 - Configurare `.env` (database, utente e password del DB).
 - `php artisan migrate`
-- `php artisan serve` e aprire l’URL indicato nel terminale.
+- `php artisan serve` (default `http://127.0.0.1:8000`). Per un nome host locale usa **`.test`** (es. `fitlife.test`): aggiungi `127.0.0.1 fitlife.test` in `/etc/hosts`, imposta `APP_URL=http://fitlife.test:8000` nel `.env`, apri `http://fitlife.test:8000`. Evita **`.dev`** in Chrome: richiede HTTPS (HSTS) e `http://` non funziona in locale.
 
 ### Produzione e performance
 
@@ -45,9 +45,9 @@ In produzione usare Supervisor per tenere il worker attivo. Configurazione di es
 **Immagini default foto profilo:** in `public/images/` devono essere presenti `foto-profilo-default-media.jpg` e `foto-profilo-default-piccola.jpg` (placeholder per utenti senza foto). Sono incluse nel repository.
 
 **Checklist pre-deploy:**
-1. `APP_DEBUG=false`, `APP_ENV=production`, `APP_KEY` impostato in `.env` (opz. `APP_VERSION` allineato al rilascio)
+1. `APP_DEBUG=false`, `APP_ENV=production`, `APP_KEY` e `APP_VERSION` (per il footer) impostati in `.env`
 2. Migrazioni eseguite (`php artisan migrate --force`, già nell'entrypoint Docker) — **obbligatorio** dopo aggiornamenti che aggiungono tabelle (`course_enrollments`, `course_occurrence_settings`, ecc.)
-3. Cache artefact dopo il deploy (`php deploy-cache.php`)
+3. Cache artefact dopo il deploy (vedi comandi `php artisan` nella sezione sotto)
 4. Immagini default in `public/images/` (foto-profilo-default-*.jpg)
 5. Queue worker attivo (Supervisor o equivalente)
 
@@ -57,8 +57,6 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 ```
-
-Oppure usare lo script: `php deploy-cache.php` (o `./deploy-cache.sh` su Linux/macOS).
 
 ### Repository e sviluppo
 

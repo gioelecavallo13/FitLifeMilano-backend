@@ -22,4 +22,4 @@ Tutte le note di rilascio rilevanti per **FitLife Milano — Backend**. Le versi
 ### Note operative
 
 - Dopo il deploy: `php artisan migrate --force` (crea/aggiorna le nuove tabelle).
-- Opzionale: `APP_VERSION=1.7.0` in `.env` se si vuole forzare la versione mostrata in UI.
+- Impostare `APP_VERSION` in `.env` per la versione in footer (nessun default in `config/app.php`).
